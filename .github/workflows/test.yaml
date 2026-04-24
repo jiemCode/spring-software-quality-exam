@@ -1,8 +1,6 @@
 name: AssurApp | Maven Tests and Reports
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
