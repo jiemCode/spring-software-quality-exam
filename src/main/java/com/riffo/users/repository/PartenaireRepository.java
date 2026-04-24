@@ -48,6 +48,10 @@ public interface PartenaireRepository extends JpaRepository<Partenaire, Long> {
      */
     Optional<Partenaire> findByEmail(String email);
 
+    boolean existsByEmail(String email);
+
+    boolean existsByEmailAndIdNot(String email, Long id);
+
     /**
      * Recherche tous les partenaires avec un statut actif
      * @return une liste de partenaires actifs

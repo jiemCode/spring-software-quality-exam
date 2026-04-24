@@ -1,14 +1,20 @@
 package com.riffo.users.controller;
 
+import com.riffo.users.dto.PartenaireRequest;
+import com.riffo.users.dto.PartenaireResponse;
 import com.riffo.users.entity.Partenaire;
+import com.riffo.users.exception.ResourceNotFoundException;
+import com.riffo.users.mapper.PartenaireMapper;
 import com.riffo.users.service.PartenaireService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Contrôleur REST pour la gestion des partenaires
@@ -17,10 +23,16 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/partenaires")
 @CrossOrigin(origins = "*", maxAge = 3600)
+@Validated
 public class PartenaireRESTController {
 
-    @Autowired
-    private PartenaireService partenaireService;
+    private final PartenaireService partenaireService;
+    private final PartenaireMapper partenaireMapper;
+
+    public PartenaireRESTController(PartenaireService partenaireService, PartenaireMapper partenaireMapper) {
+        this.partenaireService = partenaireService;
+        this.partenaireMapper = partenaireMapper;
+    }
 
     /**
      * Récupère tous les partenaires
@@ -28,8 +40,11 @@ public class PartenaireRESTController {
      * @return liste de tous les partenaires avec code 200
      */
     @GetMapping
-    public ResponseEntity<List<Partenaire>> getAllPartenaires() {
-        List<Partenaire> partenaires = partenaireService.getAllPartenaires();
+    public ResponseEntity<List<PartenaireResponse>> getAllPartenaires() {
+        List<PartenaireResponse> partenaires = partenaireService.getAllPartenaires()
+                .stream()
+                .map(partenaireMapper::toResponse)
+                .toList();
         return ResponseEntity.ok(partenaires);
     }
 
@@ -40,13 +55,10 @@ public class PartenaireRESTController {
      * @return le partenaire avec code 200, ou 404 s'il n'existe pas
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Partenaire> getPartenaireById(@PathVariable Long id) {
-        Optional<Partenaire> partenaire = partenaireService.getPartenaireById(id);
-        if (partenaire.isPresent()) {
-            return ResponseEntity.ok(partenaire.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<PartenaireResponse> getPartenaireById(@PathVariable Long id) {
+        Partenaire partenaire = partenaireService.getPartenaireById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Le partenaire avec l'ID " + id + " n'existe pas"));
+        return ResponseEntity.ok(partenaireMapper.toResponse(partenaire));
     }
 
     /**
@@ -56,13 +68,10 @@ public class PartenaireRESTController {
      * @return le partenaire avec code 200, ou 404 s'il n'existe pas
      */
     @GetMapping("/search/nom")
-    public ResponseEntity<Partenaire> getPartenaireByNom(@RequestParam String nom) {
-        Optional<Partenaire> partenaire = partenaireService.getPartenaireByNom(nom);
-        if (partenaire.isPresent()) {
-            return ResponseEntity.ok(partenaire.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<PartenaireResponse> getPartenaireByNom(@RequestParam @NotBlank String nom) {
+        Partenaire partenaire = partenaireService.getPartenaireByNom(nom)
+                .orElseThrow(() -> new ResourceNotFoundException("Aucun partenaire trouve pour le nom " + nom));
+        return ResponseEntity.ok(partenaireMapper.toResponse(partenaire));
     }
 
     /**
@@ -72,8 +81,11 @@ public class PartenaireRESTController {
      * @return liste des partenaires de la categorie
      */
     @GetMapping("/search/categorie")
-    public ResponseEntity<List<Partenaire>> getPartenairesByCategorie(@RequestParam String categorie) {
-        List<Partenaire> partenaires = partenaireService.getPartenairesByCategorie(categorie);
+    public ResponseEntity<List<PartenaireResponse>> getPartenairesByCategorie(@RequestParam @NotBlank String categorie) {
+        List<PartenaireResponse> partenaires = partenaireService.getPartenairesByCategorie(categorie)
+                .stream()
+                .map(partenaireMapper::toResponse)
+                .toList();
         return ResponseEntity.ok(partenaires);
     }
 
@@ -84,8 +96,11 @@ public class PartenaireRESTController {
      * @return liste des partenaires du statut
      */
     @GetMapping("/search/statut")
-    public ResponseEntity<List<Partenaire>> getPartenairesByStatut(@RequestParam String statut) {
-        List<Partenaire> partenaires = partenaireService.getPartenairesByStatut(statut);
+    public ResponseEntity<List<PartenaireResponse>> getPartenairesByStatut(@RequestParam @NotBlank String statut) {
+        List<PartenaireResponse> partenaires = partenaireService.getPartenairesByStatut(statut)
+                .stream()
+                .map(partenaireMapper::toResponse)
+                .toList();
         return ResponseEntity.ok(partenaires);
     }
 
@@ -96,8 +111,11 @@ public class PartenaireRESTController {
      * @return liste des partenaires de la ville
      */
     @GetMapping("/search/ville")
-    public ResponseEntity<List<Partenaire>> getPartenairesByVille(@RequestParam String ville) {
-        List<Partenaire> partenaires = partenaireService.getPartenairesByVille(ville);
+    public ResponseEntity<List<PartenaireResponse>> getPartenairesByVille(@RequestParam @NotBlank String ville) {
+        List<PartenaireResponse> partenaires = partenaireService.getPartenairesByVille(ville)
+                .stream()
+                .map(partenaireMapper::toResponse)
+                .toList();
         return ResponseEntity.ok(partenaires);
     }
 
@@ -108,13 +126,10 @@ public class PartenaireRESTController {
      * @return le partenaire avec code 200, ou 404 s'il n'existe pas
      */
     @GetMapping("/search/email")
-    public ResponseEntity<Partenaire> getPartenaireByEmail(@RequestParam String email) {
-        Optional<Partenaire> partenaire = partenaireService.getPartenaireByEmail(email);
-        if (partenaire.isPresent()) {
-            return ResponseEntity.ok(partenaire.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<PartenaireResponse> getPartenaireByEmail(@RequestParam @NotBlank @Email String email) {
+        Partenaire partenaire = partenaireService.getPartenaireByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Aucun partenaire trouve pour l'email " + email));
+        return ResponseEntity.ok(partenaireMapper.toResponse(partenaire));
     }
 
     /**
@@ -124,13 +139,9 @@ public class PartenaireRESTController {
      * @return le partenaire enregistré avec code 201
      */
     @PostMapping
-    public ResponseEntity<Partenaire> addPartenaire(@RequestBody Partenaire partenaire) {
-        try {
-            Partenaire nouveauPartenaire = partenaireService.addPartenaire(partenaire);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nouveauPartenaire);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<PartenaireResponse> addPartenaire(@Valid @RequestBody PartenaireRequest partenaireRequest) {
+        Partenaire nouveauPartenaire = partenaireService.addPartenaire(partenaireMapper.toEntity(partenaireRequest));
+        return ResponseEntity.status(HttpStatus.CREATED).body(partenaireMapper.toResponse(nouveauPartenaire));
     }
 
     /**
@@ -141,13 +152,10 @@ public class PartenaireRESTController {
      * @return le partenaire mis à jour avec code 200
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Partenaire> updatePartenaire(@PathVariable Long id, @RequestBody Partenaire partenaire) {
-        try {
-            Partenaire partenaireMAJ = partenaireService.updatePartenaire(id, partenaire);
-            return ResponseEntity.ok(partenaireMAJ);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<PartenaireResponse> updatePartenaire(@PathVariable Long id,
+                                                               @Valid @RequestBody PartenaireRequest partenaireRequest) {
+        Partenaire partenaireMAJ = partenaireService.updatePartenaire(id, partenaireMapper.toEntity(partenaireRequest));
+        return ResponseEntity.ok(partenaireMapper.toResponse(partenaireMAJ));
     }
 
     /**
@@ -158,12 +166,8 @@ public class PartenaireRESTController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePartenaire(@PathVariable Long id) {
-        try {
-            partenaireService.deletePartenaire(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
+        partenaireService.deletePartenaire(id);
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -184,7 +188,7 @@ public class PartenaireRESTController {
      * @return true si le partenaire existe, false sinon
      */
     @GetMapping("/exists/email")
-    public ResponseEntity<Boolean> existsByEmail(@RequestParam String email) {
+    public ResponseEntity<Boolean> existsByEmail(@RequestParam @NotBlank @Email String email) {
         boolean exists = partenaireService.existsByEmail(email);
         return ResponseEntity.ok(exists);
     }
