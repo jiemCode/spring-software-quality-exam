@@ -1,4 +1,4 @@
-name: AssurApp with Maven and Reports
+name: AssurApp | Maven Tests and Reports
 
 on:
   push:
@@ -21,13 +21,13 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build and Test
+    - name: Build
       run: ./mvnw clean compile
 
     - name: Test
       run: ./mvnw clean test
 
-    - name: Upload Coverage Report (JaCoCo)
+    - name: Coverage Report (JaCoCo)
       if: always()
       uses: actions/upload-artifact@v4
       with:
