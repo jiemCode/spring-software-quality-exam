@@ -27,6 +27,9 @@ jobs:
     - name: Test
       run: ./mvnw clean test
 
+    - name: Verify
+      run: ./mvnw verify
+
     - name: Coverage Report (JaCoCo)
       if: always()
       uses: actions/upload-artifact@v4
