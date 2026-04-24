@@ -15,6 +15,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,6 +63,94 @@ class PartenaireRESTControllerIntegrationTest {
     }
 
     @Test
+    void getPartenaireByIdShouldReturnPartnerWhenExists() throws Exception {
+        Partenaire partenaire = partenaireRepository.save(buildEntity("id@edu.sn", "Test ID"));
+
+        mockMvc.perform(get("/partenaires/{id}", partenaire.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(partenaire.getId()))
+                .andExpect(jsonPath("$.nom").value("Test ID"));
+    }
+
+    @Test
+    void getPartenaireByIdShouldReturnNotFoundWhenDoesNotExist() throws Exception {
+        mockMvc.perform(get("/partenaires/{id}", 999L))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getPartenaireByNomShouldReturnPartnerWhenExists() throws Exception {
+        partenaireRepository.save(buildEntity("maguette@edu.sn", "Maguette"));
+
+        mockMvc.perform(get("/partenaires/search/nom").param("nom", "Maguette"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nom").value("Maguette"));
+    }
+
+    @Test
+    void getPartenaireByNomShouldReturnNotFoundWhenDoesNotExist() throws Exception {
+        mockMvc.perform(get("/partenaires/search/nom").param("nom", "Non Existent"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void getPartenairesByCategorieShouldReturnList() throws Exception {
+        partenaireRepository.save(buildEntity("adama@edu.sn", "P1"));
+        partenaireRepository.save(buildEntity("awa@edu.sn", "P2"));
+
+        mockMvc.perform(get("/partenaires/search/categorie").param("categorie", "Sante"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)));
+    }
+
+    @Test
+    void getPartenairesByStatutShouldReturnList() throws Exception {
+        partenaireRepository.save(buildEntity("fatou@edu.sn", "Fatou"));
+
+        mockMvc.perform(get("/partenaires/search/statut").param("statut", "ACTIF"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    void getPartenairesByVilleShouldReturnList() throws Exception {
+        partenaireRepository.save(buildEntity("moussa@edu.sn", "Moussa"));
+
+        mockMvc.perform(get("/partenaires/search/ville").param("ville", "Dakar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+    }
+
+    @Test
+    void getPartenaireByEmailShouldReturnPartnerWhenExists() throws Exception {
+        partenaireRepository.save(buildEntity("saly@edu.sn", "Saly"));
+
+        mockMvc.perform(get("/partenaires/search/email").param("email", "saly@edu.sn"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("saly@edu.sn"));
+    }
+
+    @Test
+    void getPartenaireByEmailShouldReturnNotFoundWhenDoesNotExist() throws Exception {
+        mockMvc.perform(get("/partenaires/search/email").param("email", "john@edu.sn"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updatePartenaireShouldUpdateAndReturnPartner() throws Exception {
+        Partenaire partenaire = partenaireRepository.save(buildEntity("mcdonald@edu.sn", "McDonald"));
+        PartenaireRequest request = buildRequest("abc@edu.sn");
+        request.setNom("ABC");
+
+        mockMvc.perform(put("/partenaires/{id}", partenaire.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nom").value("ABC"))
+                .andExpect(jsonPath("$.email").value("abc@edu.sn"));
+    }
+
+    @Test
     void deletePartenaireShouldReturnNoContentAndRemovePartner() throws Exception {
         Partenaire partenaire = partenaireRepository.save(buildEntity("delete@clinique.sn", "Centre Medical"));
 
@@ -71,6 +160,32 @@ class PartenaireRESTControllerIntegrationTest {
         mockMvc.perform(get("/partenaires"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void countPartenairesShouldReturnTotalCount() throws Exception {
+        partenaireRepository.save(buildEntity("maguette1@edu.sn", "Maguette 1"));
+        partenaireRepository.save(buildEntity("maguette2@edu.sn", "Maguette 2"));
+
+        mockMvc.perform(get("/partenaires/count"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(2));
+    }
+
+    @Test
+    void existsByEmailShouldReturnTrueWhenExists() throws Exception {
+        partenaireRepository.save(buildEntity("exists@edu.sn", "P1"));
+
+        mockMvc.perform(get("/partenaires/exists/email").param("email", "exists@edu.sn"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(true));
+    }
+
+    @Test
+    void existsByEmailShouldReturnFalseWhenDoesNotExist() throws Exception {
+        mockMvc.perform(get("/partenaires/exists/email").param("email", "notfound@edu.sn"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(false));
     }
 
     private PartenaireRequest buildRequest(String email) {
