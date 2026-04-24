@@ -31,9 +31,9 @@ public interface PartenaireService {
     Optional<Partenaire> getPartenaireByNom(String nom);
 
     /**
-     * Récupère tous les partenaires d'une catégorie
-     * @param categorie la catégorie
-     * @return liste des partenaires de la catégorie
+     * Récupère tous les partenaires d'une categorie
+     * @param categorie la categorie
+     * @return liste des partenaires de la categorie
      */
     List<Partenaire> getPartenairesByCategorie(String categorie);
 

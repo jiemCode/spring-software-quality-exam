@@ -66,10 +66,10 @@ public class PartenaireRESTController {
     }
 
     /**
-     * Récupère tous les partenaires d'une catégorie
+     * Récupère tous les partenaires d'une categorie
      * GET /api/partenaires/search/categorie?categorie={categorie}
-     * @param categorie la catégorie
-     * @return liste des partenaires de la catégorie
+     * @param categorie la categorie
+     * @return liste des partenaires de la categorie
      */
     @GetMapping("/search/categorie")
     public ResponseEntity<List<Partenaire>> getPartenairesByCategorie(@RequestParam String categorie) {

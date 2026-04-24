@@ -21,11 +21,11 @@ public interface PartenaireRepository extends JpaRepository<Partenaire, Long> {
     Optional<Partenaire> findByNom(String nom);
 
     /**
-     * Recherche tous les partenaires par catégorie
-     * @param catégorie la catégorie du partenaire
+     * Recherche tous les partenaires par categorie
+     * @param categorie la categorie du partenaire
      * @return une liste de partenaires
      */
-    List<Partenaire> findByCategorie(String catégorie);
+    List<Partenaire> findByCategorie(String categorie);
 
     /**
      * Recherche tous les partenaires par statut

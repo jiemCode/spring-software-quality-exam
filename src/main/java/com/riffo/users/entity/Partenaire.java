@@ -17,7 +17,7 @@ public class Partenaire {
     private String nom;
 
     @Column(nullable = false, length = 50)
-    private String catégorie;
+    private String categorie;
 
     @Column(nullable = false, length = 255)
     private String adresse;
@@ -26,7 +26,7 @@ public class Partenaire {
     private String ville;
 
     @Column(nullable = false, length = 20)
-    private String téléphone;
+    private String telephone;
 
     @Column(nullable = false, length = 100)
     private String email;
@@ -47,14 +47,14 @@ public class Partenaire {
     public Partenaire() {
     }
 
-    public Partenaire(String nom, String catégorie, String adresse, String ville, 
-                      String téléphone, String email, Double latitude, Double longitude, 
+    public Partenaire(String nom, String categorie, String adresse, String ville, 
+                      String telephone, String email, Double latitude, Double longitude, 
                       String statut, Double plafondPriseEnCharge) {
         this.nom = nom;
-        this.catégorie = catégorie;
+        this.categorie = categorie;
         this.adresse = adresse;
         this.ville = ville;
-        this.téléphone = téléphone;
+        this.telephone = telephone;
         this.email = email;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -79,12 +79,12 @@ public class Partenaire {
         this.nom = nom;
     }
 
-    public String getCatégorie() {
-        return catégorie;
+    public String getCategorie() {
+        return categorie;
     }
 
-    public void setCatégorie(String catégorie) {
-        this.catégorie = catégorie;
+    public void setCategorie(String categorie) {
+        this.categorie = categorie;
     }
 
     public String getAdresse() {
@@ -103,12 +103,12 @@ public class Partenaire {
         this.ville = ville;
     }
 
-    public String getTéléphone() {
-        return téléphone;
+    public String getTelephone() {
+        return telephone;
     }
 
-    public void setTéléphone(String téléphone) {
-        this.téléphone = téléphone;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public String getEmail() {
@@ -156,10 +156,10 @@ public class Partenaire {
         return "Partenaire{" +
                 "id=" + id +
                 ", nom='" + nom + '\'' +
-                ", catégorie='" + catégorie + '\'' +
+                ", categorie='" + categorie + '\'' +
                 ", adresse='" + adresse + '\'' +
                 ", ville='" + ville + '\'' +
-                ", téléphone='" + téléphone + '\'' +
+                ", telephone='" + telephone + '\'' +
                 ", email='" + email + '\'' +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +

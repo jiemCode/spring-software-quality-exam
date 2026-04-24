@@ -107,8 +107,8 @@ public class PartenaireServiceImpl implements PartenaireService {
         if (partenaire.getVille() != null) {
             p.setVille(partenaire.getVille());
         }
-        if (partenaire.getTéléphone() != null) {
-            p.setTéléphone(partenaire.getTéléphone());
+        if (partenaire.getTelephone() != null) {
+            p.setTelephone(partenaire.getTelephone());
         }
         if (partenaire.getEmail() != null) {
             p.setEmail(partenaire.getEmail());
