@@ -41,7 +41,7 @@ class PartenaireServiceImplTest {
         Partenaire result = partenaireService.addPartenaire(partenaire);
 
         assertEquals(1L, result.getId());
-        assertEquals("Hopital Central", result.getNom());
+        assertEquals("Centre National Oncologie de Diamniadio", result.getNom());
         verify(partenaireRepository).existsByEmail(partenaire.getEmail());
         verify(partenaireRepository).save(partenaire);
     }
