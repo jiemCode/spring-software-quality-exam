@@ -30,9 +30,14 @@ jobs:
     - name: Verify
       run: ./mvnw verify
 
+    - name: Set short SHA
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+
     - name: Coverage Report (JaCoCo)
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: jacoco-report
+        name: jacoco-report-${{ steps.vars.outputs.sha_short }}
         path: target/site/jacoco/
